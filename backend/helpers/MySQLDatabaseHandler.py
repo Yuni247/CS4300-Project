@@ -45,3 +45,42 @@ class MySQLDatabaseHandler(object):
         self.query_executor(sql_file_data)
         sql_file.close()
 
+# MODELS START HERE
+class Book(db.Model):
+    __tablename__ = "webtoons"
+    title = db.Column(db.String(150), nullable=False)
+    descript = db.Column(db.String(1900), nullable=False)
+    authors = db.Column(db.String(100), nullable=False)
+    publisher = db.Column(db.String(50), nullable=False)
+    categories = db.Column(db.String(50), nullable=False)
+    review_score = db.Column(db.String(15), nullable=False)
+    review_count = db.Column(db.String(15), nullable=False)
+
+
+    def __init__(self, **kwargs):
+        """
+        Initializes a Book object
+        """
+
+        self.title = kwargs.get(title)
+        self.descript = kwargs.get(descript)
+        self.authors = kwargs.get(authors)
+        self.publisher = kwargs.get(publisher)
+        self.categories = kwargs.get(categories)
+        self.review_score = kwargs.get(review_score)
+        self.review_count = kwargs.get(review_count)
+
+    def serialize(self):
+        """
+        Serializes a book object 
+        """
+
+        return {
+            "title": self.title,
+            "descript": self.descript, 
+            "authors": self.authors,
+            "publisher": self.publisher, 
+            "categories": self.categories, 
+            "review_score": self.review_score, 
+            "review_count": self.review_count, 
+        }
