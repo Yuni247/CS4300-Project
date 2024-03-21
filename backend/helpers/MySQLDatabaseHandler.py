@@ -47,7 +47,7 @@ class MySQLDatabaseHandler(object):
 
 # MODELS START HERE
 class Book(db.Model):
-    __tablename__ = "webtoons"
+    __tablename__ = "books"
     title = db.Column(db.String(150), nullable=False)
     descript = db.Column(db.String(1900), nullable=False)
     authors = db.Column(db.String(100), nullable=False)
