@@ -5,7 +5,6 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 from nltk.tokenize import TreebankWordTokenizer
 from cossim import * 
-from cossim import build_inverted_index
 
 
 # ROOT_PATH for linking with all your files. 
@@ -45,7 +44,7 @@ def home():
     return render_template('base.html',title="sample html")
 
 @app.route("/books")
-def episodes_search():
+def books_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))
     r_score_dict = {}
@@ -62,7 +61,7 @@ def episodes_search():
         r_count_dict[i] = result['review_count']
         response_arr.append(result)
     
-    inv_idx = build_inverted_index(response)
+    inv_idx = build_inverted_indexes(response)
  
     idf = compute_idf(inv_idx=inv_idx, n_docs=len(response))
 
