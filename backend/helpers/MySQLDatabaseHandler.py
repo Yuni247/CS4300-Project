@@ -1,5 +1,6 @@
 import os
 import sqlalchemy as db
+from sqlalchemy.ext.declarative import declarative_base
 
 class MySQLDatabaseHandler(object):
     
@@ -46,15 +47,17 @@ class MySQLDatabaseHandler(object):
         sql_file.close()
 
 # MODELS START HERE
-class Book(db.Model):
+Base = declarative_base()
+
+class Book(Base):
     __tablename__ = "books"
-    title = db.Column(db.String(150), nullable=False)
+    title = db.Column(db.String(150), nullable=False, primary_key = True)
     descript = db.Column(db.String(1900), nullable=False)
     authors = db.Column(db.String(100), nullable=False)
     publisher = db.Column(db.String(50), nullable=False)
     categories = db.Column(db.String(50), nullable=False)
-    review_score = db.Column(db.String(15), nullable=False)
-    review_count = db.Column(db.String(15), nullable=False)
+    review_score = db.Column(db.Float, nullable=False)
+    review_count = db.Column(db.Integer, nullable=False)
 
 
     def __init__(self, **kwargs):
