@@ -2,13 +2,8 @@ from collections import defaultdict, Counter
 from helpers.MySQLDatabaseHandler import Book, MySQLDatabaseHandler, db
 import json
 import math
-import string
-import time
 import numpy as np
 from IPython.core.display import HTML
-
-
-
 
 import re
 from sklearn.feature_extraction.text import CountVectorizer
@@ -542,54 +537,3 @@ def get_responses_from_results(response, results):
    
 
 
-def cossim_comparison(fbook, book_db):
-    """Arguments:
-        fbook : Book (queried book that was found in DB; just need authors, category, publisher, descript)
-        book_db : List[Book] (full db of books)"""
-
-
-    tokenized_fbook_feats = tokenize_book_feats(fbook) # outpts dict mapping "feature" --> List[tokens]
-   
-    tokenized_db_feats = []
-    for book in book_db:
-        tokenized_db_feats.append(tokenize_book_feats(book)) # outpts List[dict] for DB, where dict defined as above
-    db_authors_idx, db_publisher_idx, db_categories_idx = build_inverted_indexes(tokenized_db_feats) # outpts 3 idxs for features
-
-
-    authors_idf = compute_idf(db_authors_idx, 91478, min_df=5, max_df_ratio=0.95)
-    publisher_idf = compute_idf(db_publisher_idx, 91478, min_df=5, max_df_ratio=0.95)
-    categories_idf = compute_idf(db_categories_idx, 91478, min_df=5, max_df_ratio=0.95)
-
-
-    authors_doc_norms = compute_doc_norms(db_authors_idx, authors_idf, 91478)
-    publisher_doc_norms = compute_doc_norms(db_publisher_idx, publisher_idf, 91478)
-    categories_doc_norms = compute_doc_norms(db_categories_idx, categories_idf, 91478)
-
-
-    fbook_authors_word_counts = dict()
-    fbook_publisher_word_counts = dict()
-    fbook_categories_word_counts = dict()
-    for token in tokenized_fbook_feats["authors"]:
-        if token not in fbook_authors_word_counts:
-            fbook_authors_word_counts[token] = 1
-        else:
-            fbook_authors_word_counts[token] += 1
-    for token in tokenized_fbook_feats["authors"]:
-        if token not in fbook_publisher_word_counts:
-            fbook_publisher_word_counts[token] = 1
-        else:
-            fbook_publisher_word_counts[token] += 1
-    for token in tokenized_fbook_feats["authors"]:
-        if token not in fbook_categories_word_counts:
-            fbook_categories_word_counts[token] = 1
-        else:
-            fbook_categories_word_counts[token] += 1
-
-
-    authors_dot_scores = accumulate_dot_scores(fbook_authors_word_counts, db_authors_idx, authors_idf)
-    publisher_dot_scores = accumulate_dot_scores(fbook_publisher_word_counts, db_publisher_idx, publisher_idf)
-    categories_dot_scores = accumulate_dot_scores(fbook_categories_word_counts, db_categories_idx, categories_idf)
-
-
-    #TODO: below not adjusted yet
-    output_list = index_search(fbook["authors"], db_authors_idx, authors_idf, authors_doc_norms, scores, rating_dict, thumbs_dict, score_func=accumulate_dot_scores, tokenizer=tokenize)
